@@ -3,13 +3,12 @@ const $ = require("cheerio");
 const fetch = require("node-fetch");
 const async = require("async");
 const RSVP = require("rsvp");
-const e = require("express");
 
 const isUrl = (string) => {
   try {
     return Boolean(new URL(string));
   } catch (e) {
-    console.log(e);
+    // console.log(e);
     return false;
   }
 };
@@ -48,12 +47,11 @@ function usingNodejsCallback(urls, cb) {
     } else
       fetch(link, { method: "GET" })
         .then(function (response) {
-          console.log(response);
           if (response.status === 404) {
             result.push({ url: link, title: "NO RESPONSE" });
             if (count === result.length) {
+              cb(result);
             }
-            cb(result);
           }
           if (response.status === 200) {
             response
@@ -70,14 +68,12 @@ function usingNodejsCallback(urls, cb) {
           }
         })
         .catch(function (err) {
-          console.log(err);
           if (err.code === "ENOTFOUND") {
             result.push({ url: link, title: "NO RESPONSE" });
-            if (urls.length === 1) {
+            if (count === result.length) {
               cb(result);
             }
           }
-          // console.log("An error occurred: " + err);
         });
   });
 }
